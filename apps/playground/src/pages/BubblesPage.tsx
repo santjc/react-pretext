@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { PText, createPretextTypography } from '@santjc/react-pretext'
+import { createPretextTypography } from '@santjc/react-pretext'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
 import { getBubbleMetrics } from '../lib/shrinkwrap'
 import { buildPlaygroundFont } from '../lib/typography'
@@ -9,6 +9,15 @@ const bubblePresets = [
   'That shrinkwrap demo is wild. It finds the exact minimum width for multiline text. CSS still leaves dead bubble area behind the last line.',
   'كل شيء يعمل هنا ايضا. Mixed bidi, grapheme clusters, emoji, and variable fonts still need the same wrapping guarantees.',
 ] as const
+
+const BUBBLE_HORIZONTAL_CHROME = 36
+
+function getBubbleStyle(typography: ReturnType<typeof createPretextTypography>) {
+  return {
+    ...typography.style,
+    width: `${(typography.width ?? 0) + BUBBLE_HORIZONTAL_CHROME}px`,
+  }
+}
 
 function BubblesPage() {
   const [text, setText] = useState<string>(bubblePresets[1])
@@ -79,14 +88,10 @@ function BubblesPage() {
                   <span className="status-tag status-tag-muted">waste {metrics.cssWaste}px</span>
                 </div>
               </div>
-              <div className="lane lane-fluid" style={{ maxWidth: `${containerWidth}px` }}>
-                <PText
-                  as="p"
-                  typography={cssTypography}
-                  className="bubble bubble-css"
-                >
+              <div className="core-bubble-wrap" style={{ maxWidth: `${containerWidth}px` }}>
+                <p className="bubble bubble-css" style={getBubbleStyle(cssTypography)}>
                   {text}
-                </PText>
+                </p>
               </div>
             </article>
 
@@ -100,14 +105,10 @@ function BubblesPage() {
                   <span className="status-tag">waste {metrics.shrinkwrapWaste}px</span>
                 </div>
               </div>
-              <div className="lane lane-fluid" style={{ maxWidth: `${containerWidth}px` }}>
-                <PText
-                  as="p"
-                  typography={shrinkwrapTypography}
-                  className="bubble bubble-accent"
-                >
+              <div className="core-bubble-wrap" style={{ maxWidth: `${containerWidth}px` }}>
+                <p className="bubble bubble-accent" style={getBubbleStyle(shrinkwrapTypography)}>
                   {text}
-                </PText>
+                </p>
               </div>
             </article>
           </div>

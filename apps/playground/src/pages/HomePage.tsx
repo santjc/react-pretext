@@ -3,16 +3,10 @@ import { ShowcaseIntro } from '../components/ShowcaseIntro'
 
 const coreShowcases = [
   {
-    to: '/showcase/measure',
-    title: 'Simple measured text',
-    body: 'Start with one hook and one shared typography object. Change width, size, or leading and inspect the exact line count and height.',
+    to: '/showcase/core',
+    title: 'Core path',
+    body: 'Move through the essential package story in one place: measure text, use responsive semantic rendering when it helps, replace scrollHeight wiring, and truncate previews within a known line budget.',
     status: 'Start here',
-  },
-  {
-    to: '/showcase/ptext',
-    title: 'Responsive PText',
-    body: 'Use semantic tags with shared typography and let PText observe width when the container is responsive.',
-    status: 'Core',
   },
   {
     to: '/showcase/accordion',
@@ -101,7 +95,7 @@ function HomePage() {
         <ShowcaseIntro
           eyebrow="Start here"
           title="Adopt Pretext from normal React component patterns first."
-          description="The main path is simple: define typography once, measure text with one hook, let PText observe responsive width, and use predicted heights in ordinary UI like accordions, feeds, and cards. Editorial showcases stay available once you need custom flow."
+          description="The main path now lives in one Core route: define typography once, measure text with one hook, use responsive semantic rendering only where it helps, replace scrollHeight wiring, and truncate previews before render. Editorial showcases stay available once you need custom flow."
           meta={
             <div className="hero-meta">
               <div className="meta-chip">
@@ -110,7 +104,7 @@ function HomePage() {
               </div>
               <div className="meta-chip">
                 <span>Core path</span>
-                <strong>measure / render / place</strong>
+                <strong>measure / responsive / truncate</strong>
               </div>
               <div className="meta-chip">
                 <span>Focus</span>
@@ -130,15 +124,15 @@ function HomePage() {
           </div>
           <div className="adoption-step">
             <p className="semantic-tag">02</p>
-            <p className="page-copy">Use <code>useMeasuredText()</code> for the simplest measured-height or line-count cases.</p>
+            <p className="page-copy">Use <code>useMeasuredText()</code> for the simplest measured-height or line-count cases, then apply the result to ordinary component layout.</p>
           </div>
           <div className="adoption-step">
             <p className="semantic-tag">03</p>
-            <p className="page-copy">Use <code>PText</code> when you want the same typography applied to real semantic DOM, including responsive width observation.</p>
+            <p className="page-copy">Render with real semantic tags while reusing the same typography values for visual alignment.</p>
           </div>
           <div className="adoption-step">
             <p className="semantic-tag">04</p>
-            <p className="page-copy">Use the predicted height in ordinary UI like accordions, card feeds, list rows, or previews before reaching for advanced editorial flow.</p>
+            <p className="page-copy">Use the predicted height or truncated preview text in ordinary UI like accordions, card feeds, list rows, or previews before reaching for advanced editorial flow.</p>
           </div>
         </div>
       </section>

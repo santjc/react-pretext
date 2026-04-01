@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { PText, createPretextTypography } from '@santjc/react-pretext'
+import { createPretextTypography } from '@santjc/react-pretext'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
 import { packMasonryCards, predictCardLayout, type MasonryCard } from '../lib/masonry'
 import { buildPlaygroundFont } from '../lib/typography'
@@ -148,13 +148,9 @@ function MasonryPage() {
                     <span className="masonry-height-label">{item.totalHeight}px</span>
                   </div>
                   <h3 className="masonry-card-title">{item.card.title}</h3>
-                  <PText
-                    as="p"
-                    typography={typography}
-                    className="masonry-card-copy"
-                  >
+                  <p className="masonry-card-copy" style={typography.style}>
                     {item.card.body}
-                  </PText>
+                  </p>
                 </article>
               ))}
             </div>

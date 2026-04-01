@@ -7,6 +7,7 @@ import * as pretext from '../pretext'
 describe('package surface', () => {
   it('keeps editorial exports off the root entrypoint', () => {
     expect(root.createPretextTypography).toBeTypeOf('function')
+    expect(root.useTruncatedText).toBeTypeOf('function')
     expect('prepare' in root).toBe(false)
     expect('layout' in root).toBe(false)
     expect('layoutWithLines' in root).toBe(false)

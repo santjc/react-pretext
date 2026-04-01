@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PText, createPretextTypography, useMeasuredText } from '@santjc/react-pretext'
+import { createPretextTypography, useMeasuredText } from '@santjc/react-pretext'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
 import { buildPlaygroundFont } from '../lib/typography'
 
@@ -60,13 +60,9 @@ function AccordionSection({
 
       <div className="accordion-body-shell" style={{ height: isOpen ? `${contentHeight + 24}px` : '0px' }}>
         <div className="accordion-body-inner">
-          <PText
-            as="p"
-            typography={typography}
-            className="accordion-body-copy"
-          >
+          <p className="accordion-body-copy" style={typography.style}>
             {body}
-          </PText>
+          </p>
         </div>
       </div>
     </article>

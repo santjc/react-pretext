@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { PText } from "@santjc/react-pretext";
 import {
   EditorialColumns,
   EditorialSurface,
@@ -68,7 +67,7 @@ function EditorialPage() {
         <ShowcaseIntro
           eyebrow="Editorial"
           title="Editorial newspaper lab"
-          description="A newspaper-structured showcase tuned to the site aesthetic: responsive PText headlines, single-surface wraparound text, multi-track cursor handoff, and pretext-driven justify spacing with proportionally related columns."
+          description="A newspaper-structured showcase tuned to the site aesthetic: styled semantic headlines, single-surface wraparound text, multi-track cursor handoff, and pretext-driven justify spacing with proportionally related columns."
           status="Advanced subpath"
         />
 
@@ -135,15 +134,12 @@ function EditorialPage() {
         <div className="newsprint-rule newsprint-rule-thick" />
 
         <section className="newsprint-banner-row">
-          <PText
-            as="h1"
-            font={`800 46px ${NEWSPRINT_FONT_FAMILY}`}
-            lineHeight={46}
+          <h1
             className="newsprint-banner-title"
             style={{ width: "100%", fontFamily: NEWSPRINT_FONT_FAMILY, fontSize: "46px", lineHeight: "46px", fontWeight: 800 }}
           >
             Around the World by Aeroplane
-          </PText>
+          </h1>
           <p className="newsprint-deck">Important title here &middot; Short note may go here</p>
         </section>
 
@@ -151,15 +147,12 @@ function EditorialPage() {
 
         <section className="newsprint-main-grid">
           <aside className="newsprint-rail">
-            <PText
-              as="h3"
-              font={`800 22px ${NEWSPRINT_FONT_FAMILY}`}
-              lineHeight={23}
+            <h3
               className="newsprint-col-headline"
               style={{ width: "100%", fontFamily: NEWSPRINT_FONT_FAMILY, fontSize: "22px", lineHeight: "23px", fontWeight: 800 }}
             >
               Latest dispatches from the continental flying fields
-            </PText>
+            </h3>
 
             <EditorialSurface
               text={leftRailText}
@@ -176,15 +169,12 @@ function EditorialPage() {
           <article className="newsprint-feature">
             <Placeholder className="np-placeholder-hero" />
 
-            <PText
-              as="h2"
-              font={`800 34px ${NEWSPRINT_FONT_FAMILY}`}
-              lineHeight={34}
+            <h2
               className="newsprint-feature-headline"
               style={{ width: "100%", fontFamily: NEWSPRINT_FONT_FAMILY, fontSize: "34px", lineHeight: "34px", fontWeight: 800 }}
             >
               Consectetur Adipisicing
-            </PText>
+            </h2>
 
             <EditorialColumns
               text={featureText}
@@ -214,15 +204,12 @@ function EditorialPage() {
           </article>
 
           <aside className="newsprint-rail">
-            <PText
-              as="h2"
-              font={`500 30px ${NEWSPRINT_FONT_FAMILY}`}
-              lineHeight={31}
+            <h2
               className="newsprint-col-headline newsprint-col-headline-light"
               style={{ width: "100%", fontFamily: NEWSPRINT_FONT_FAMILY, fontSize: "30px", lineHeight: "31px", fontWeight: 500 }}
             >
               Duis Aute Irure
-            </PText>
+            </h2>
 
             <Placeholder className="np-placeholder-sm" />
 
@@ -243,43 +230,34 @@ function EditorialPage() {
 
         <section className="newsprint-bottom-grid">
           <article className="newsprint-module">
-            <PText
-              as="h3"
-              font={`800 20px ${NEWSPRINT_FONT_FAMILY}`}
-              lineHeight={21}
+            <h3
               className="newsprint-col-headline"
               style={{ width: "100%", fontFamily: NEWSPRINT_FONT_FAMILY, fontSize: "20px", lineHeight: "21px", fontWeight: 800 }}
             >
               Tempor Incididunt
-            </PText>
+            </h3>
             <EditorialSurface text={bottomLeftText} font={font} lineHeight={lineHeight} minHeight={bottomSurfaceHeight} lineRenderMode={lineRenderMode} prepareOptions={prepareOptions} />
           </article>
 
           <article className="newsprint-module">
             <Placeholder className="np-placeholder-md" />
-            <PText
-              as="h3"
-              font={`800 18px ${NEWSPRINT_FONT_FAMILY}`}
-              lineHeight={19}
+            <h3
               className="newsprint-col-headline"
               style={{ width: "100%", fontFamily: NEWSPRINT_FONT_FAMILY, fontSize: "18px", lineHeight: "19px", fontWeight: 800 }}
             >
               Laboris Nisi
-            </PText>
+            </h3>
             <EditorialSurface text={bottomCenterText} font={font} lineHeight={lineHeight} minHeight={bottomSurfaceHeight} lineRenderMode={lineRenderMode} prepareOptions={prepareOptions} />
           </article>
 
           <article className="newsprint-module newsprint-module-wide">
             <Placeholder className="np-placeholder-wide" />
-            <PText
-              as="h3"
-              font={`800 22px ${NEWSPRINT_FONT_FAMILY}`}
-              lineHeight={23}
+            <h3
               className="newsprint-col-headline newsprint-col-headline-center"
               style={{ width: "100%", fontFamily: NEWSPRINT_FONT_FAMILY, fontSize: "22px", lineHeight: "23px", fontWeight: 800 }}
             >
               Aute Irure
-            </PText>
+            </h3>
             <EditorialColumns
               text={bottomWideText}
               font={font}

@@ -1,26 +1,14 @@
 # @santjc/react-pretext
 
-Thin React primitives over [`@chenglou/pretext`](https://www.npmjs.com/package/@chenglou/pretext).
+Simple React wrapper over [`@chenglou/pretext`](https://www.npmjs.com/package/@chenglou/pretext) for deterministic text measurement before paint, without DOM reads.
 
-`@santjc/react-pretext` is meant to make normal React adoption clearer, not to hide `pretext` behind a large framework.
+`@santjc/react-pretext` is intentionally a small React layer over `@chenglou/pretext`. It predicts text height and line count from text, typography, and width before layout hits the DOM. The core use case is measurement-driven UI: accordions, cards, previews, virtualized rows, and responsive layouts where text height affects placement.
 
-The default story is:
+The package has three layers:
 
-- define typography once
-- measure text with one hook
-- render semantic DOM with `PText`
-- use predicted heights in ordinary UI like accordions, cards, lists, and previews
-- reach for editorial flow only when block measurement is no longer enough
-
-## Features
-
-- Re-exports the core `pretext` API
-- `createPretextTypography()` for shared measurement and render config
-- `useMeasuredText()` for the simplest height and line-count cases
-- `PText` for semantic DOM text with measurement support
-- Width observation with `ResizeObserver` when `PText` does not receive an explicit `width`
-- Lower-level hooks for prepared text, segmented text, and line access
-- Advanced editorial helpers on a dedicated `editorial` subpath
+- root: the normal React-facing adoption path
+- `editorial`: advanced obstacle-aware and multi-column text flow
+- `pretext`: the raw low-level `@chenglou/pretext` escape hatch
 
 ## Installation
 
@@ -28,44 +16,20 @@ The default story is:
 npm install @santjc/react-pretext react react-dom
 ```
 
-## Stable API
-
-Import the React-facing stable APIs from the package root:
-
-```ts
-import {
-  createPretextTypography,
-  useElementWidth,
-  useMeasuredText,
-  usePreparedText,
-  usePreparedSegments,
-  usePretextLayout,
-  usePretextLines,
-  PText,
-} from '@santjc/react-pretext'
-```
-
-Stable React exports:
-
-- `createPretextTypography`
-- `useElementWidth`
-- `useMeasuredText`
-- `usePreparedText`
-- `usePreparedSegments`
-- `usePretextLayout`
-- `usePretextLines`
-- `PText`
+Peer dependencies: React 18 or 19.
 
 ## Start Here
 
-### 1. Measure text with one hook
+### Measure text with one hook
 
 ```tsx
 import { createPretextTypography, useMeasuredText } from '@santjc/react-pretext'
 
 function Example({ text }: { text: string }) {
   const typography = createPretextTypography({
-    font: '400 18px GeistVariable, sans-serif',
+    family: 'Inter, sans-serif',
+    size: 18,
+    weight: 400,
     lineHeight: 28,
     width: 320,
   })
@@ -76,74 +40,42 @@ function Example({ text }: { text: string }) {
 }
 ```
 
-Use this for the common case where a component needs a known text height, line count, or both.
-
-Enable profiling only when you need the timing metric:
-
-```tsx
-const { prepareMs } = useMeasuredText({
-  text,
-  typography,
-  enableProfiling: true,
-})
-```
-
-### 2. Use shared typography with `PText`
+### Render with `PText` using the same typography
 
 ```tsx
 import { PText, createPretextTypography } from '@santjc/react-pretext'
 
 function Example() {
-  const body = createPretextTypography({
-    font: '400 18px GeistVariable, sans-serif',
+  const typography = createPretextTypography({
+    family: 'Inter, sans-serif',
+    size: 18,
+    weight: 400,
     lineHeight: 28,
     width: 320,
   })
 
   return (
-    <PText as="p" typography={body}>
+    <PText as="p" typography={typography}>
       Semantic text with one source of truth for measurement and render output.
     </PText>
   )
 }
 ```
 
-`PText` applies `font`, `lineHeight`, and explicit `width` from its measurement inputs by default. If you pass `style.font` or `style.width`, those render overrides still win.
-
-### 3. Let `PText` observe responsive width
-
-```tsx
-import { PText, createPretextTypography } from '@santjc/react-pretext'
-
-function Example() {
-  const body = createPretextTypography({
-    font: '400 18px GeistVariable, sans-serif',
-    lineHeight: 28,
-  })
-
-  return (
-    <div style={{ width: 'min(100%, 36rem)' }}>
-      <PText as="p" typography={body}>
-        This paragraph does not receive an explicit width. PText observes the element width and remeasures as the container changes.
-      </PText>
-    </div>
-  )
-}
-```
-
-This is the intended happy path when the font is known but the final width comes from responsive layout.
-
-### 4. Replace hidden measurement or `scrollHeight`
+### Replace `scrollHeight` or hidden measurement nodes
 
 ```tsx
 import { createPretextTypography, useMeasuredText, PText } from '@santjc/react-pretext'
 
 function AccordionBody({ isOpen, text }: { isOpen: boolean; text: string }) {
   const typography = createPretextTypography({
-    font: '400 18px GeistVariable, sans-serif',
+    family: 'Inter, sans-serif',
+    size: 18,
+    weight: 400,
     lineHeight: 28,
     width: 360,
   })
+
   const { height } = useMeasuredText({ text, typography })
 
   return (
@@ -156,268 +88,98 @@ function AccordionBody({ isOpen, text }: { isOpen: boolean; text: string }) {
 }
 ```
 
-This keeps the DOM semantic while removing hidden probe nodes or animation logic that depends on reading `scrollHeight` after render.
+## Typography input
 
-### 5. Predict measured card or list heights
+`createPretextTypography()` accepts either a structured typography object or a CSS font shorthand string.
+
+Structured input:
 
 ```tsx
-import { createPretextTypography, useMeasuredText } from '@santjc/react-pretext'
+const typography = createPretextTypography({
+  family: 'Inter, sans-serif',
+  size: 18,
+  weight: 400,
+  lineHeight: 28,
+  width: 320,
+})
+```
 
-function ResultCard({ text, width }: { text: string; width: number }) {
+Shorthand input:
+
+```tsx
+const typography = createPretextTypography({
+  font: '400 18px Inter, sans-serif',
+  lineHeight: 28,
+  width: 320,
+})
+```
+
+The structured form is the recommended default. It is easier to derive from theme tokens and less fragile in normal application code.
+
+## Truncation
+
+`useTruncatedText()` gives you the visible text that fits within a known line budget, plus a `didTruncate` flag you can use for UI like “Read more”.
+
+```tsx
+import { PText, createPretextTypography, useTruncatedText } from '@santjc/react-pretext'
+
+function Preview({ text }: { text: string }) {
   const typography = createPretextTypography({
-    font: '400 16px GeistVariable, sans-serif',
-    lineHeight: 26,
-    width: width - 32,
-  })
-  const { height, lineCount } = useMeasuredText({ text, typography })
-
-  return (
-    <div>
-      <div>{lineCount} lines</div>
-      <div>predicted body height: {height}px</div>
-    </div>
-  )
-}
-```
-
-This pattern works well for feeds, search results, CMS previews, issue lists, and any responsive grid where text height affects placement.
-
-### 6. Drop lower only when you need more control
-
-If you want to prepare once and reuse that prepared handle across multiple layouts yourself, drop down to `usePreparedText()` and `usePretextLayout()`.
-
-If you want actual line output from segmented text, use `usePreparedSegments()` with `usePretextLines()`.
-
-If you want the raw `@chenglou/pretext` APIs directly, import them from the dedicated `pretext` subpath instead of the root entrypoint.
-
-```ts
-import {
-  prepare,
-  prepareWithSegments,
-  layout,
-  layoutWithLines,
-  layoutNextLine,
-  walkLineRanges,
-} from '@santjc/react-pretext/pretext'
-```
-
-```tsx
-import { usePreparedSegments, usePretextLines } from '@santjc/react-pretext'
-
-function Example() {
-  const { prepared } = usePreparedSegments({
-    text: 'Line-by-line rendering starts here.',
-    font: '400 18px GeistVariable, sans-serif',
-  })
-
-  const { lines } = usePretextLines({
-    prepared,
+    family: 'Inter, sans-serif',
+    size: 16,
+    lineHeight: 24,
     width: 280,
-    lineHeight: 28,
+  })
+
+  const preview = useTruncatedText({
+    text,
+    typography,
+    maxLines: 3,
   })
 
   return (
-    <div>
-      {lines.map((line, index) => (
-        <div key={index}>{line.text}</div>
-      ))}
-    </div>
+    <>
+      <PText as="p" typography={typography}>{preview.text}</PText>
+      {preview.didTruncate ? <button>Read more</button> : null}
+    </>
   )
 }
 ```
 
-## Editorial API
+## Root API
 
-Editorial APIs are available from the advanced `editorial` subpath:
+- `createPretextTypography`
+- `useElementWidth`
+- `useMeasuredText`
+- `usePreparedText`
+- `usePreparedSegments`
+- `usePretextLayout`
+- `usePretextLines`
+- `useTruncatedText`
+- `PText`
 
-```ts
-import {
-  FlowLines,
-  useTextFlow,
-  flowText,
-  carveLineSlots,
-  createLineSlotResolver,
-  getCircleBlockedLineRangeForRow,
-  pickWidestLineSlot,
-  EditorialColumns,
-  EditorialSurface,
-  type EditorialTrack,
-  type EditorialFigure,
-} from '@santjc/react-pretext/editorial'
-```
+`PText` is a semantic rendering helper, not the center of the measurement story. The main path still starts with hooks.
 
-These APIs are public and supported, but they are intentionally separate from the default adoption path.
+## Advanced layers
 
-Reach for them when you need:
+Use `@santjc/react-pretext/pretext` when you want the raw low-level pretext APIs.
 
-- custom line-by-line rendering
-- obstacle-aware text flow
-- multi-column continuation with cursor handoff
-- editorial or newspaper-style composition
+Use `@santjc/react-pretext/editorial` when you need custom line rendering, obstacle-aware flow, or multi-column continuation.
 
-### Advanced editorial example
+## SSR and webfonts
 
-For obstacle-aware layouts, use segmented preparation from the stable API and the editorial helpers from the `editorial` subpath.
+Measurement depends on canvas-backed text metrics, so measurement hooks are a client-side feature.
 
-```tsx
-import { PText, createPretextTypography, usePreparedSegments } from '@santjc/react-pretext'
-import {
-  FlowLines,
-  createLineSlotResolver,
-  getCircleBlockedLineRangeForRow,
-  useTextFlow,
-} from '@santjc/react-pretext/editorial'
+- In Next.js and similar frameworks, call them from client components.
+- If you need SSR fallback markup, hydrate into a measured client view.
+- Webfont loading can affect first-render accuracy until the font is ready.
 
-function EditorialExample({ width }: { width: number }) {
-  const body = createPretextTypography({
-    font: '400 18px GeistVariable, sans-serif',
-    lineHeight: 30,
-  })
-  const title = 'The Future of Text Layout Is Not CSS'
-  const text = 'An editorial surface needs more than a single block height...'
+## Repository layout
 
-  const paddingX = 28
-  const bodyStartY = 180
-  const bodyWidth = width - paddingX * 2
-  const orb = {
-    x: paddingX + bodyWidth * 0.72,
-    y: bodyStartY + body.lineHeight * 3,
-    radius: 72,
-  }
+- `packages/react-pretext`: the published library
+- `apps/playground`: local adoption and showcase app
+- `packages/react-pretext/src/core/*`: root stable API
+- `packages/react-pretext/src/editorial/*`: advanced editorial API
+- `packages/react-pretext/src/test/*`: package boundary and integration tests
 
-  const { prepared } = usePreparedSegments({ text, font: body.font })
-
-  const getLineSlotAtY = createLineSlotResolver({
-    baseLineSlot: { left: paddingX, right: paddingX + bodyWidth },
-    lineHeight: body.lineHeight,
-    minWidth: 180,
-    getBlockedLineRanges: (lineTop, lineBottom) => {
-      const blocked = getCircleBlockedLineRangeForRow({
-        cx: orb.x,
-        cy: orb.y,
-        radius: orb.radius,
-        lineTop,
-        lineBottom,
-        horizontalPadding: 16,
-      })
-
-      return blocked === null ? [] : [blocked]
-    },
-  })
-
-  const flow = useTextFlow({
-    prepared,
-    lineHeight: body.lineHeight,
-    startY: bodyStartY,
-    getLineSlotAtY,
-  })
-
-  return (
-    <div style={{ position: 'relative', minHeight: bodyStartY + flow.height + 48 }}>
-      <PText
-        as="h1"
-        typography={createPretextTypography({
-          font: '700 64px GeistVariable, sans-serif',
-          lineHeight: 60,
-          width: bodyWidth * 0.7,
-        })}
-        style={{ position: 'absolute', left: paddingX, top: 28 }}
-      >
-        {title}
-      </PText>
-
-      <div
-        style={{
-          position: 'absolute',
-          left: orb.x - orb.radius,
-          top: orb.y - orb.radius,
-          width: orb.radius * 2,
-          height: orb.radius * 2,
-          borderRadius: '999px',
-          background: 'rgba(255, 77, 0, 0.2)',
-        }}
-      />
-
-      <FlowLines
-        lines={flow.lines}
-        font={body.font}
-        lineHeight={body.lineHeight}
-        renderLine={({ key, line, text, style }) => (
-          <p key={key} data-line-start={line.start.graphemeIndex} style={style}>
-            <span style={{ color: '#ff4d00' }}>§</span> {text}
-          </p>
-        )}
-      />
-    </div>
-  )
-}
-```
-
-`FlowLines` is the small advanced bridge for direct `useTextFlow` usage: it keeps the absolute-positioned line shell in one place while letting you replace the rendered element, semantics, annotations, or styling with `renderLine`.
-
-## How to think about the API
-
-The package works best if you treat it in layers.
-
-### Stable root layer
-
-- prepare text
-- layout text
-- observe width
-- render semantic DOM text
-- predict heights for ordinary UI
-
-### Editorial layer
-
-- resolve available line slots
-- flow text around obstacles
-- assemble editorial or custom layouts
-
-If you are building normal UI text measurement, stay on the stable root API.
-If you are building custom layout systems, the editorial APIs on the `editorial` subpath are the right place to explore.
-
-If you want the original non-React low-level helpers, use the `pretext` subpath.
-
-## Source layout
-
-The package source tree mirrors the public layering decisions:
-
-- `packages/react-pretext/src/core/*` contains the default adoption path and root exports
-- `packages/react-pretext/src/editorial/*` contains the advanced editorial subpath
-- `packages/react-pretext/src/test/*` contains cross-entrypoint package tests
-
-Keep playground-only helpers in `apps/playground/src/lib/*` unless they are being intentionally promoted into the public package with tests and docs.
-
-## Caveats
-
-- `createPretextTypography()` is the recommended way to keep measurement inputs and render styles aligned.
-- `font` should match the actual rendered font declaration as closely as possible.
-- Webfont loading can affect measurement accuracy until the font is ready.
-- `PText` currently supports `string` children only.
-- `prepareOptions` currently map directly to pretext preparation options such as `whiteSpace`.
-- `useTextFlow` expects a reference-stable `getLineSlotAtY` callback. Memoize it with `useMemo` when passing custom resolvers from React components.
-- `usePreparedText` only includes `prepareMs` when `enableProfiling: true` is passed.
-- Editorial `lineRenderMode="justify"` uses explicit `word-spacing` derived from pretext line measurements instead of browser `text-align: justify`. Complex whitespace cases fall back to left alignment.
-- `EditorialFigure` treats explicit `x` and `y` as overrides over `placement`, and clamps the final position within the available bounds.
-
-## Breaking Changes
-
-- Root imports no longer re-export raw `@chenglou/pretext` APIs.
-- Migrate `import { prepare } from '@santjc/react-pretext'` to `import { prepare } from '@santjc/react-pretext/pretext'`.
-- `PEditorialColumns` and `PEditorialSurface` were renamed to `EditorialColumns` and `EditorialSurface`.
-- `PEditorialTrack` and `PEditorialFigure` sentinel children were replaced by `EditorialTrack` and `EditorialFigure` config objects passed through `tracks` and `figures` props.
-
-## Contributing
-
-Issues and pull requests are welcome.
-
-Good contributions for this project usually look like one of these:
-
-- improving the React ergonomics without hiding pretext’s original model
-- adding tests around public package behavior
-- improving TypeScript types and package DX
-- clarifying docs and examples
-- validating whether a helper belongs in the root public API or should stay internal
-
-When contributing, prefer small, explicit abstractions over large convenience layers. The package is intentionally trying to stay close to `pretext`.
-Keep `src/core` independent from `src/editorial`, and treat repeated playground wiring as a signal to either formalize an API or keep it clearly local.
+The package README in `packages/react-pretext/README.md` contains the fuller API and guidance reference.

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { PText, createPretextTypography } from '@santjc/react-pretext'
+import { createPretextTypography } from '@santjc/react-pretext'
 import { EditorialColumns } from '@santjc/react-pretext/editorial'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
 
@@ -85,14 +85,9 @@ function EditorialEnginePage() {
       <section className="panel editorial-engine-panel">
         <div className="editorial-engine-header">
           <p className="eyebrow">Mockup 151</p>
-          <PText
-            as="h2"
-            typography={titleTypography}
-            className="editorial-engine-title"
-            style={{ width: 'min(100%, 920px)' }}
-          >
+          <h2 className="editorial-engine-title" style={{ ...titleTypography.style, width: 'min(100%, 920px)' }}>
             Live text reflow around animated obstacles
-          </PText>
+          </h2>
         </div>
 
         <EditorialColumns

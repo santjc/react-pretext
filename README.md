@@ -159,36 +159,68 @@ function Example() {
 ### Use `PText`
 
 ```tsx
-import { PText } from '@santjc/react-pretext'
+import { PText, createPretextTypography } from '@santjc/react-pretext'
 
 function Example() {
+  const body = createPretextTypography({
+    font: '400 18px GeistVariable, sans-serif',
+    lineHeight: 28,
+    width: 320,
+  })
+
   return (
-    <PText
-      as="p"
-      font="400 18px GeistVariable, sans-serif"
-      lineHeight={28}
-      width={320}
-    >
+    <PText as="p" typography={body}>
       Semantic text with a thin measurement wrapper.
     </PText>
   )
 }
 ```
 
+### Recommended typography workflow
+
+Use `createPretextTypography()` when the same values should drive both measurement and rendering.
+
+```tsx
+import { PText, createPretextTypography, usePreparedText, usePretextLayout } from '@santjc/react-pretext'
+
+function Example({ text }: { text: string }) {
+  const typography = createPretextTypography({
+    font: '400 18px GeistVariable, sans-serif',
+    lineHeight: 28,
+    width: 360,
+  })
+
+  const { prepared } = usePreparedText({ text, font: typography.font })
+  const layout = usePretextLayout({
+    prepared,
+    width: typography.width ?? 360,
+    lineHeight: typography.lineHeight,
+  })
+
+  return (
+    <PText typography={typography}>
+      {text}
+    </PText>
+  )
+}
+```
+
+`PText` now applies `font`, `lineHeight`, and explicit `width` from its measurement inputs by default. If you pass `style.font` or `style.width`, those render overrides still win.
+
 ### Preserve textarea-style whitespace
 
 ```tsx
-import { PText } from '@santjc/react-pretext'
+import { PText, createPretextTypography } from '@santjc/react-pretext'
 
 function Example({ value }: { value: string }) {
+  const body = createPretextTypography({
+    font: '400 16px GeistVariable, sans-serif',
+    lineHeight: 24,
+    width: 420,
+  })
+
   return (
-    <PText
-      as="p"
-      font="400 16px GeistVariable, sans-serif"
-      lineHeight={24}
-      width={420}
-      prepareOptions={{ whiteSpace: 'pre-wrap' }}
-    >
+    <PText as="p" typography={body} prepareOptions={{ whiteSpace: 'pre-wrap' }}>
       {value}
     </PText>
   )
@@ -200,7 +232,7 @@ function Example({ value }: { value: string }) {
 For obstacle-aware layouts, use segmented preparation from the stable API and the editorial helpers from the `editorial` subpath.
 
 ```tsx
-import { PText, usePreparedSegments } from '@santjc/react-pretext'
+import { PText, createPretextTypography, usePreparedSegments } from '@santjc/react-pretext'
 import {
   createLineSlotResolver,
   getCircleBlockedLineRangeForRow,
@@ -208,8 +240,10 @@ import {
 } from '@santjc/react-pretext/editorial'
 
 function EditorialExample({ width }: { width: number }) {
-  const lineHeight = 30
-  const font = '400 18px GeistVariable, sans-serif'
+  const body = createPretextTypography({
+    font: '400 18px GeistVariable, sans-serif',
+    lineHeight: 30,
+  })
   const title = 'The Future of Text Layout Is Not CSS'
   const text = 'An editorial surface needs more than a single block height...'
 
@@ -218,15 +252,15 @@ function EditorialExample({ width }: { width: number }) {
   const bodyWidth = width - paddingX * 2
   const orb = {
     x: paddingX + bodyWidth * 0.72,
-    y: bodyStartY + lineHeight * 3,
+    y: bodyStartY + body.lineHeight * 3,
     radius: 72,
   }
 
-  const { prepared } = usePreparedSegments({ text, font })
+  const { prepared } = usePreparedSegments({ text, font: body.font })
 
   const getLineSlotAtY = createLineSlotResolver({
     baseLineSlot: { left: paddingX, right: paddingX + bodyWidth },
-    lineHeight,
+    lineHeight: body.lineHeight,
     minWidth: 180,
     getBlockedLineRanges: (lineTop, lineBottom) => {
       const blocked = getCircleBlockedLineRangeForRow({
@@ -244,7 +278,7 @@ function EditorialExample({ width }: { width: number }) {
 
   const flow = useTextFlow({
     prepared,
-    lineHeight,
+    lineHeight: body.lineHeight,
     startY: bodyStartY,
     getLineSlotAtY,
   })
@@ -253,9 +287,11 @@ function EditorialExample({ width }: { width: number }) {
     <div style={{ position: 'relative', minHeight: bodyStartY + flow.height + 48 }}>
       <PText
         as="h1"
-        width={bodyWidth * 0.7}
-        font="700 64px GeistVariable, sans-serif"
-        lineHeight={60}
+        typography={createPretextTypography({
+          font: '700 64px GeistVariable, sans-serif',
+          lineHeight: 60,
+          width: bodyWidth * 0.7,
+        })}
         style={{ position: 'absolute', left: paddingX, top: 28 }}
       >
         {title}
@@ -281,8 +317,7 @@ function EditorialExample({ width }: { width: number }) {
             left: line.x,
             top: line.y,
             width: Math.ceil(line.width),
-            font,
-            lineHeight: `${lineHeight}px`,
+            ...body.style,
           }}
         >
           {line.text}
@@ -309,7 +344,7 @@ The package works best if you treat it in layers:
 - assemble editorial or custom layouts
 
 If you are building normal UI text measurement, stay on the stable root API.
-If you are building custom layout systems, the editorial APIs on the root export are the right place to explore.
+If you are building custom layout systems, the editorial APIs on the `editorial` subpath are the right place to explore.
 
 ## Current Scope
 
@@ -328,6 +363,7 @@ What it is not trying to be:
 
 ## Caveats
 
+- `createPretextTypography()` is the recommended way to keep measurement inputs and render styles aligned.
 - `font` should match the actual rendered font declaration as closely as possible.
 - Webfont loading can affect measurement accuracy until the font is ready.
 - `PText` currently supports `string` children only.
@@ -340,7 +376,7 @@ What it is not trying to be:
 The current package surface is intentionally small and public:
 
 - stable measurement hooks and `PText`
-- public editorial primitives on the root package export
+- public editorial primitives on the `editorial` subpath
 - explicit justify rendering based on pretext measurements
 - playground routes that exercise both measurement and editorial flow
 

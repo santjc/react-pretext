@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
-import { PText, prepare, usePretextLayout } from '@santjc/react-pretext'
+import { PText, createPretextTypography, prepare, usePretextLayout } from '@santjc/react-pretext'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
-import { buildPlaygroundFont, buildPlaygroundTextStyle } from '../lib/typography'
+import { buildPlaygroundFont } from '../lib/typography'
 
 const sections = [
   {
@@ -31,7 +31,6 @@ function AccordionSection({
   onToggle,
   width,
   font,
-  fontSize,
   lineHeight,
 }: {
   title: string
@@ -40,12 +39,12 @@ function AccordionSection({
   onToggle: () => void
   width: number
   font: string
-  fontSize: number
   lineHeight: number
 }) {
   const bodyWidth = Math.max(0, width - 48)
-  const prepared = useMemo(() => prepare(body, font), [body, font])
-  const metrics = usePretextLayout({ prepared, width: bodyWidth, lineHeight })
+  const typography = createPretextTypography({ font, lineHeight, width: bodyWidth })
+  const prepared = useMemo(() => prepare(body, typography.font), [body, typography.font])
+  const metrics = usePretextLayout({ prepared, width: typography.width ?? bodyWidth, lineHeight: typography.lineHeight })
   const contentHeight = metrics.height
 
   return (
@@ -64,11 +63,8 @@ function AccordionSection({
         <div className="accordion-body-inner">
           <PText
             as="p"
-            width={bodyWidth}
-            font={font}
-            lineHeight={lineHeight}
+            typography={typography}
             className="accordion-body-copy"
-            style={buildPlaygroundTextStyle(fontSize, lineHeight)}
           >
             {body}
           </PText>
@@ -82,7 +78,7 @@ function AccordionPage() {
   const [width, setWidth] = useState(520)
   const [fontSize, setFontSize] = useState(18)
   const [lineHeight, setLineHeight] = useState(30)
-  const [openSectionId, setOpenSectionId] = useState(sections[0].id)
+  const [openSectionId, setOpenSectionId] = useState<string>(sections[0].id)
   const font = buildPlaygroundFont(400, fontSize)
 
   return (
@@ -131,7 +127,6 @@ function AccordionPage() {
                 onToggle={() => setOpenSectionId((current) => (current === section.id ? '' : section.id))}
                 width={width}
                 font={font}
-                fontSize={fontSize}
                 lineHeight={lineHeight}
               />
             ))}

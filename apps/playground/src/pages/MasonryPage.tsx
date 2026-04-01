@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
-import { PText } from '@santjc/react-pretext'
+import { PText, createPretextTypography } from '@santjc/react-pretext'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
 import { packMasonryCards, predictCardLayout, type MasonryCard } from '../lib/masonry'
-import { buildPlaygroundFont, buildPlaygroundTextStyle } from '../lib/typography'
+import { buildPlaygroundFont } from '../lib/typography'
 
 const masonryCards: MasonryCard[] = [
   {
@@ -52,7 +52,11 @@ function MasonryPage() {
   const cardChromeHeight = 112
   const columnWidth = Math.floor((containerWidth - gap * (columnCount - 1)) / columnCount)
   const textWidth = Math.max(0, columnWidth - 36)
-  const font = buildPlaygroundFont(400, fontSize)
+  const typography = createPretextTypography({
+    font: buildPlaygroundFont(400, fontSize),
+    lineHeight,
+    width: textWidth,
+  })
 
   const predictedCards = useMemo(
     () =>
@@ -60,12 +64,12 @@ function MasonryPage() {
         predictCardLayout({
           card,
           width: textWidth,
-          font,
-          lineHeight,
+          font: typography.font,
+          lineHeight: typography.lineHeight,
           chromeHeight: cardChromeHeight,
         }),
       ),
-    [font, lineHeight, textWidth],
+    [cardChromeHeight, textWidth, typography.font, typography.lineHeight],
   )
 
   const packed = useMemo(() => packMasonryCards(predictedCards, columnCount, gap), [columnCount, gap, predictedCards])
@@ -117,11 +121,8 @@ function MasonryPage() {
                   <h3 className="masonry-card-title">{item.card.title}</h3>
                   <PText
                     as="p"
-                    width={textWidth}
-                    font={font}
-                    lineHeight={lineHeight}
+                    typography={typography}
                     className="masonry-card-copy"
-                    style={buildPlaygroundTextStyle(fontSize, lineHeight)}
                   >
                     {item.card.body}
                   </PText>

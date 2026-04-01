@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { PText, usePreparedText, usePretextLayout } from '@santjc/react-pretext'
+import { PText, createPretextTypography, usePreparedText, usePretextLayout } from '@santjc/react-pretext'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
-import { buildPlaygroundFont, buildPlaygroundTextStyle, fontWeightOptions } from '../lib/typography'
+import { buildPlaygroundFont, fontWeightOptions } from '../lib/typography'
 
 const initialText = 'Prepare once, layout often. That is the shape of the abstraction this package should preserve.'
 
@@ -11,10 +11,18 @@ function MeasurePage() {
   const [fontSize, setFontSize] = useState(20)
   const [lineHeight, setLineHeight] = useState(30)
   const [fontWeight, setFontWeight] = useState(400)
-  const font = buildPlaygroundFont(fontWeight, fontSize)
+  const typography = createPretextTypography({
+    font: buildPlaygroundFont(fontWeight, fontSize),
+    lineHeight,
+    width,
+  })
 
-  const { prepared, prepareMs } = usePreparedText({ text, font, enableProfiling: true })
-  const layout = usePretextLayout({ prepared, width, lineHeight })
+  const { prepared, prepareMs } = usePreparedText({ text, font: typography.font, enableProfiling: true })
+  const layout = usePretextLayout({
+    prepared,
+    width: typography.width ?? width,
+    lineHeight: typography.lineHeight,
+  })
 
   return (
     <main className="page showcase-page">
@@ -65,11 +73,8 @@ function MeasurePage() {
           <div className="preview-lane" style={{ width: `${width}px` }}>
             <PText
               as="p"
-              width={width}
-              font={font}
-              lineHeight={lineHeight}
+              typography={typography}
               className="preview-copy"
-              style={buildPlaygroundTextStyle(fontSize, lineHeight, fontWeight)}
             >
               {text}
             </PText>

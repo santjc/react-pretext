@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
-import { PText } from '@santjc/react-pretext'
+import { PText, createPretextTypography } from '@santjc/react-pretext'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
 import { getBubbleMetrics } from '../lib/shrinkwrap'
-import { buildPlaygroundFont, buildPlaygroundTextStyle } from '../lib/typography'
+import { buildPlaygroundFont } from '../lib/typography'
 
 const bubblePresets = [
   'Yo did you see the new Pretext library? It measures text without the DOM. Pure JavaScript arithmetic.',
@@ -11,7 +11,7 @@ const bubblePresets = [
 ] as const
 
 function BubblesPage() {
-  const [text, setText] = useState(bubblePresets[1])
+  const [text, setText] = useState<string>(bubblePresets[1])
   const [containerWidth, setContainerWidth] = useState(340)
   const [fontSize, setFontSize] = useState(18)
   const [lineHeight, setLineHeight] = useState(28)
@@ -21,6 +21,8 @@ function BubblesPage() {
     () => getBubbleMetrics({ text, font, maxWidth: containerWidth, lineHeight }),
     [containerWidth, font, lineHeight, text],
   )
+  const cssTypography = createPretextTypography({ font, lineHeight, width: metrics.cssWidth })
+  const shrinkwrapTypography = createPretextTypography({ font, lineHeight, width: metrics.shrinkwrapWidth })
 
   return (
     <main className="page showcase-page">
@@ -80,11 +82,8 @@ function BubblesPage() {
               <div className="lane" style={{ width: `${containerWidth}px` }}>
                 <PText
                   as="p"
-                  width={metrics.cssWidth}
-                  font={font}
-                  lineHeight={lineHeight}
+                  typography={cssTypography}
                   className="bubble bubble-css"
-                  style={{ width: `${metrics.cssWidth}px`, ...buildPlaygroundTextStyle(fontSize, lineHeight) }}
                 >
                   {text}
                 </PText>
@@ -104,11 +103,8 @@ function BubblesPage() {
               <div className="lane" style={{ width: `${containerWidth}px` }}>
                 <PText
                   as="p"
-                  width={metrics.shrinkwrapWidth}
-                  font={font}
-                  lineHeight={lineHeight}
+                  typography={shrinkwrapTypography}
                   className="bubble bubble-accent"
-                  style={{ width: `${metrics.shrinkwrapWidth}px`, ...buildPlaygroundTextStyle(fontSize, lineHeight) }}
                 >
                   {text}
                 </PText>

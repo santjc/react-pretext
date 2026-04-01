@@ -2,6 +2,7 @@ import { forwardRef, useCallback, useEffect } from 'react'
 import { useElementWidth } from '../hooks/useElementWidth'
 import { usePreparedText, type PrepareOptions } from '../hooks/usePreparedText'
 import { usePretextLayout } from '../hooks/usePretextLayout'
+import { createPretextTypography, type PretextTypography } from '../lib/typography'
 
 type PTextTag = 'p' | 'div' | 'span' | 'h1' | 'h2' | 'h3'
 
@@ -14,14 +15,25 @@ type PTextMeasure = {
 type PTextOwnProps = {
   as?: PTextTag
   children: string
-  font: string
-  lineHeight: number
   prepareOptions?: PrepareOptions
-  width?: number
   onMeasure?: (result: PTextMeasure) => void
 }
 
-type PTextProps = PTextOwnProps & React.HTMLAttributes<HTMLElement>
+type PTextExplicitMeasureProps = {
+  font: string
+  lineHeight: number
+  width?: number
+  typography?: PretextTypography
+}
+
+type PTextTypographyProps = {
+  typography: PretextTypography
+  font?: string
+  lineHeight?: number
+  width?: number
+}
+
+type PTextProps = PTextOwnProps & (PTextExplicitMeasureProps | PTextTypographyProps) & React.HTMLAttributes<HTMLElement>
 
 type PTextElement = HTMLParagraphElement | HTMLDivElement | HTMLSpanElement | HTMLHeadingElement
 
@@ -37,22 +49,35 @@ function assignRef<T>(ref: React.Ref<T> | undefined, value: T) {
 }
 
 function PTextInner(
-  { as, children, font, lineHeight, prepareOptions, width, onMeasure, ...rest }: PTextProps,
+  { as, children, font, lineHeight, prepareOptions, typography, width, onMeasure, style, ...rest }: PTextProps,
   forwardedRef: React.ForwardedRef<PTextElement>,
 ) {
   const { ref: observedRef, width: observedWidth } = useElementWidth<HTMLElement>()
-  const resolvedWidth = width ?? observedWidth
-  const { prepared } = usePreparedText({ text: children, font, options: prepareOptions })
-  const result = usePretextLayout({ prepared, width: resolvedWidth, lineHeight })
+  const explicitWidth = width ?? typography?.width
+  const resolvedWidth = explicitWidth ?? observedWidth
+  const resolvedFont = font ?? typography?.font
+  const resolvedLineHeight = lineHeight ?? typography?.lineHeight
+
+  if (resolvedFont === undefined || resolvedLineHeight === undefined) {
+    throw new Error('PText requires `font` and `lineHeight`, either directly or via `typography`.')
+  }
+
+  const { prepared } = usePreparedText({ text: children, font: resolvedFont, options: prepareOptions })
+  const result = usePretextLayout({ prepared, width: resolvedWidth, lineHeight: resolvedLineHeight })
+  const typographyStyle = createPretextTypography({
+    font: resolvedFont,
+    lineHeight: resolvedLineHeight,
+    width: explicitWidth,
+  }).style
 
   const composedRef = useCallback(
     (node: HTMLElement | null) => {
-      if (width === undefined) {
+      if (explicitWidth === undefined) {
         observedRef(node)
       }
       assignRef(forwardedRef, node as PTextElement | null)
     },
-    [forwardedRef, observedRef, width],
+    [explicitWidth, forwardedRef, observedRef],
   )
 
   useEffect(() => {
@@ -70,7 +95,7 @@ function PTextInner(
   const Tag: React.ElementType = as ?? 'p'
 
   return (
-    <Tag ref={composedRef} {...rest}>
+    <Tag ref={composedRef} style={{ ...typographyStyle, ...style }} {...rest}>
       {children}
     </Tag>
   )

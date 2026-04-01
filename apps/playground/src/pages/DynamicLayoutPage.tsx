@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { PText, usePreparedSegments } from '@santjc/react-pretext'
+import { PText, createPretextTypography, usePreparedSegments } from '@santjc/react-pretext'
 import { createLineSlotResolver, getCircleBlockedLineRangeForRow, useTextFlow } from '@santjc/react-pretext/editorial'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
 
@@ -17,6 +17,11 @@ function DynamicLayoutPage() {
   const [lineHeight, setLineHeight] = useState(26)
   const titleFont = '700 34px GeistVariable, sans-serif'
   const bodyFont = '400 16px GeistVariable, sans-serif'
+  const captionTypography = createPretextTypography({
+    font: '500 13px GeistVariable, sans-serif',
+    lineHeight: 18,
+    width: 220,
+  })
 
   const titlePrepared = usePreparedSegments({ text: dynamicTitle, font: titleFont })
   const bodyPrepared = usePreparedSegments({ text: dynamicBody, font: bodyFont, options: { whiteSpace: 'pre-wrap' } })
@@ -151,10 +156,7 @@ function DynamicLayoutPage() {
             <div className="dynamic-layout-caption">
               <PText
                 as="p"
-                width={220}
-                font={'500 13px GeistVariable, sans-serif'}
-                lineHeight={18}
-                style={{ width: '220px', font: '500 13px/18px GeistVariable, sans-serif' }}
+                typography={captionTypography}
               >
                 Obstacles reserve geometry first. Text routing happens second.
               </PText>

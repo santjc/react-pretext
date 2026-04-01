@@ -5,6 +5,7 @@ import * as root from './index'
 
 describe('package surface', () => {
   it('keeps editorial exports off the root entrypoint', () => {
+    expect(root.createPretextTypography).toBeTypeOf('function')
     expect('useTextFlow' in root).toBe(false)
     expect('flowText' in root).toBe(false)
     expect('createLineSlotResolver' in root).toBe(false)

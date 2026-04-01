@@ -5,6 +5,7 @@ export { usePreparedText } from './hooks/usePreparedText'
 export { usePreparedSegments } from './hooks/usePreparedSegments'
 export { usePretextLayout } from './hooks/usePretextLayout'
 export { usePretextLines } from './hooks/usePretextLines'
+export { createPretextTypography } from './lib/typography'
 export { PText } from './components/PText'
 
 export type { ElementWidthResult } from './hooks/useElementWidth'
@@ -12,4 +13,5 @@ export type { PrepareOptions, UsePreparedTextInput, UsePreparedTextResult } from
 export type { UsePreparedSegmentsInput, UsePreparedSegmentsResult } from './hooks/usePreparedSegments'
 export type { UsePretextLayoutInput, UsePretextLayoutResult } from './hooks/usePretextLayout'
 export type { UsePretextLinesInput, UsePretextLinesResult } from './hooks/usePretextLines'
+export type { PretextTypography, PretextTypographyInput } from './lib/typography'
 export type { PTextProps, PTextMeasure, PTextTag } from './components/PText'

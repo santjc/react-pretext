@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { PText } from '@santjc/react-pretext'
+import { PText, createPretextTypography } from '@santjc/react-pretext'
 import { PEditorialColumns, PEditorialFigure, PEditorialTrack } from '@santjc/react-pretext/editorial'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
 
@@ -15,6 +15,11 @@ function EditorialEnginePage() {
   const [gap, setGap] = useState(22)
   const [lineHeight, setLineHeight] = useState(24)
   const font = '400 15px GeistVariable, sans-serif'
+  const titleTypography = createPretextTypography({
+    font: '700 40px GeistVariable, sans-serif',
+    lineHeight: 42,
+    width: 920,
+  })
 
   useEffect(() => {
     if (!isRunning) {
@@ -77,11 +82,9 @@ function EditorialEnginePage() {
           <p className="eyebrow">Mockup 151</p>
           <PText
             as="h2"
-            width={920}
-            font={'700 40px GeistVariable, sans-serif'}
-            lineHeight={42}
+            typography={titleTypography}
             className="editorial-engine-title"
-            style={{ width: 'min(100%, 920px)', font: '700 40px/42px GeistVariable, sans-serif' }}
+            style={{ width: 'min(100%, 920px)' }}
           >
             Live text reflow around animated obstacles
           </PText>

@@ -3,8 +3,7 @@
   "compilerOptions": {
     "types": ["vite/client"],
     "paths": {
-      "@santjc/react-pretext": ["../../packages/react-pretext/src/index.ts"],
-      "@santjc/react-pretext/experimental": ["../../packages/react-pretext/src/experimental.ts"]
+      "@santjc/react-pretext": ["../../packages/react-pretext/src/index.ts"]
     }
   },
   "include": ["src", "vite.config.ts"]

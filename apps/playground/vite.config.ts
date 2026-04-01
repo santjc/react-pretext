@@ -7,10 +7,6 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: '@santjc/react-pretext/experimental',
-        replacement: fileURLToPath(new URL('../../packages/react-pretext/src/experimental.ts', import.meta.url)),
-      },
-      {
         find: '@santjc/react-pretext',
         replacement: fileURLToPath(new URL('../../packages/react-pretext/src/index.ts', import.meta.url)),
       },

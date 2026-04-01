@@ -1,8 +1,6 @@
 import { render } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { PEditorialColumns } from './PEditorialColumns'
-import { PEditorialFigure } from '../lib/editorialFigures'
-import { PEditorialTrack } from '../lib/editorialTracks'
+import { EditorialColumns } from './PEditorialColumns'
 
 const useElementWidthMock = vi.fn()
 const usePreparedSegmentsMock = vi.fn()
@@ -21,7 +19,7 @@ vi.mock('../lib/flowText', () => ({
   initialCursor: { segmentIndex: 0, graphemeIndex: 0 },
 }))
 
-describe('PEditorialColumns', () => {
+describe('EditorialColumns', () => {
   beforeEach(() => {
     useElementWidthMock.mockReset()
     usePreparedSegmentsMock.mockReset()
@@ -48,14 +46,20 @@ describe('PEditorialColumns', () => {
 
   it('renders multiple tracks and continues text between them', () => {
     const { getByText } = render(
-      <PEditorialColumns text="body" font="400 18px GeistVariable, sans-serif" lineHeight={28} gap={20}>
-        <PEditorialTrack width={220} minHeight={280}>
-          <PEditorialFigure shape="circle" width={100} height={100} placement="top-right">
-            <div>orb</div>
-          </PEditorialFigure>
-        </PEditorialTrack>
-        <PEditorialTrack width={220} minHeight={280} />
-      </PEditorialColumns>,
+      <EditorialColumns
+        text="body"
+        font="400 18px GeistVariable, sans-serif"
+        lineHeight={28}
+        gap={20}
+        tracks={[
+          {
+            width: 220,
+            minHeight: 280,
+            figures: [{ shape: 'circle', width: 100, height: 100, placement: 'top-right', content: <div>orb</div> }],
+          },
+          { width: 220, minHeight: 280 },
+        ]}
+      />,
     )
 
     expect(getByText('orb')).toBeTruthy()
@@ -67,10 +71,13 @@ describe('PEditorialColumns', () => {
 
   it('supports fr-based tracks from measured container width', () => {
     render(
-      <PEditorialColumns text="body" font="400 18px GeistVariable, sans-serif" lineHeight={28} gap={20}>
-        <PEditorialTrack fr={2} minHeight={280} />
-        <PEditorialTrack fr={1} minHeight={280} />
-      </PEditorialColumns>,
+      <EditorialColumns
+        text="body"
+        font="400 18px GeistVariable, sans-serif"
+        lineHeight={28}
+        gap={20}
+        tracks={[{ fr: 2, minHeight: 280 }, { fr: 1, minHeight: 280 }]}
+      />,
     )
 
     expect(flowTextMock).toHaveBeenNthCalledWith(1, expect.objectContaining({ getLineSlotAtY: expect.any(Function) }))
@@ -97,9 +104,13 @@ describe('PEditorialColumns', () => {
     })
 
     const { getByText } = render(
-      <PEditorialColumns text="body" font="400 18px GeistVariable, sans-serif" lineHeight={28} lineRenderMode="justify">
-        <PEditorialTrack width={220} minHeight={280} />
-      </PEditorialColumns>,
+      <EditorialColumns
+        text="body"
+        font="400 18px GeistVariable, sans-serif"
+        lineHeight={28}
+        lineRenderMode="justify"
+        tracks={[{ width: 220, minHeight: 280 }]}
+      />,
     )
 
     const line = getByText('justify line')
@@ -118,9 +129,13 @@ describe('PEditorialColumns', () => {
     })
 
     const { getByText } = render(
-      <PEditorialColumns text="body" font="400 18px GeistVariable, sans-serif" lineHeight={28} lineRenderMode="justify">
-        <PEditorialTrack width={220} minHeight={280} />
-      </PEditorialColumns>,
+      <EditorialColumns
+        text="body"
+        font="400 18px GeistVariable, sans-serif"
+        lineHeight={28}
+        lineRenderMode="justify"
+        tracks={[{ width: 220, minHeight: 280 }]}
+      />,
     )
 
     const line = getByText('final line')
@@ -130,9 +145,13 @@ describe('PEditorialColumns', () => {
 
   it('passes prepareOptions to segmented preparation', () => {
     render(
-      <PEditorialColumns text="body" font="400 18px GeistVariable, sans-serif" lineHeight={28} prepareOptions={{ whiteSpace: 'pre-wrap' }}>
-        <PEditorialTrack width={220} minHeight={280} />
-      </PEditorialColumns>,
+      <EditorialColumns
+        text="body"
+        font="400 18px GeistVariable, sans-serif"
+        lineHeight={28}
+        prepareOptions={{ whiteSpace: 'pre-wrap' }}
+        tracks={[{ width: 220, minHeight: 280 }]}
+      />,
     )
 
     expect(usePreparedSegmentsMock).toHaveBeenCalledWith({
@@ -146,9 +165,12 @@ describe('PEditorialColumns', () => {
     useElementWidthMock.mockReturnValue({ ref: vi.fn(), width: 0, node: null })
 
     const { queryByText } = render(
-      <PEditorialColumns text="body" font="400 18px GeistVariable, sans-serif" lineHeight={28}>
-        <PEditorialTrack fr={1} minHeight={280} />
-      </PEditorialColumns>,
+      <EditorialColumns
+        text="body"
+        font="400 18px GeistVariable, sans-serif"
+        lineHeight={28}
+        tracks={[{ fr: 1, minHeight: 280 }]}
+      />,
     )
 
     expect(flowTextMock).not.toHaveBeenCalled()

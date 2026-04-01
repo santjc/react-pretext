@@ -1,4 +1,4 @@
-import { layout, prepare } from '@santjc/react-pretext'
+import { layout, prepare } from '@santjc/react-pretext/pretext'
 
 type MasonryCard = {
   id: string

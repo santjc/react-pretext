@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { PText, createPretextTypography } from '@santjc/react-pretext'
-import { PEditorialColumns, PEditorialFigure, PEditorialTrack } from '@santjc/react-pretext/editorial'
+import { EditorialColumns } from '@santjc/react-pretext/editorial'
 import { ShowcaseIntro } from '../components/ShowcaseIntro'
 
 const engineText = `The editorial engine demo is where the package starts to feel less like a measurement helper and more like a composition tool. Each track owns explicit width, padding, and obstruction rules, but the text cursor continues across the whole spread.
@@ -95,7 +95,7 @@ function EditorialEnginePage() {
           </PText>
         </div>
 
-        <PEditorialColumns
+        <EditorialColumns
           text={engineText}
           font={font}
           lineHeight={lineHeight}
@@ -103,26 +103,38 @@ function EditorialEnginePage() {
           lineRenderMode="justify"
           prepareOptions={{ whiteSpace: 'pre-wrap' }}
           className="editorial-engine-columns"
-        >
-          <PEditorialTrack fr={1.15} minHeight={420} paddingInline={14} className="editorial-engine-track">
-            <PEditorialFigure shape="circle" width={112} height={112} x={orbA.x} y={orbA.y} linePadding={16}>
-              <div className="engine-orb engine-orb-primary" />
-            </PEditorialFigure>
-            <PEditorialFigure shape="rect" width={146} height={124} placement="bottom-left" linePadding={12}>
-              <div className="engine-pullquote">
-                <p>"Geometry first, line breaking second."</p>
-              </div>
-            </PEditorialFigure>
-          </PEditorialTrack>
-
-          <PEditorialTrack fr={0.92} minHeight={420} paddingInline={14} className="editorial-engine-track">
-            <PEditorialFigure shape="circle" width={124} height={124} x={orbB.x} y={orbB.y} linePadding={16}>
-              <div className="engine-orb engine-orb-outline" />
-            </PEditorialFigure>
-          </PEditorialTrack>
-
-          <PEditorialTrack fr={0.93} minHeight={420} paddingInline={14} className="editorial-engine-track" />
-        </PEditorialColumns>
+          tracks={[
+            {
+              fr: 1.15,
+              minHeight: 420,
+              paddingInline: 14,
+              className: 'editorial-engine-track',
+              figures: [
+                { shape: 'circle', width: 112, height: 112, x: orbA.x, y: orbA.y, linePadding: 16, content: <div className="engine-orb engine-orb-primary" /> },
+                {
+                  shape: 'rect',
+                  width: 146,
+                  height: 124,
+                  placement: 'bottom-left',
+                  linePadding: 12,
+                  content: (
+                    <div className="engine-pullquote">
+                      <p>"Geometry first, line breaking second."</p>
+                    </div>
+                  ),
+                },
+              ],
+            },
+            {
+              fr: 0.92,
+              minHeight: 420,
+              paddingInline: 14,
+              className: 'editorial-engine-track',
+              figures: [{ shape: 'circle', width: 124, height: 124, x: orbB.x, y: orbB.y, linePadding: 16, content: <div className="engine-orb engine-orb-outline" /> }],
+            },
+            { fr: 0.93, minHeight: 420, paddingInline: 14, className: 'editorial-engine-track' },
+          ]}
+        />
       </section>
     </main>
   )

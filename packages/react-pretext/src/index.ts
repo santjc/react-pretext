@@ -1,5 +1,3 @@
-export * from '@chenglou/pretext'
-
 export { useElementWidth } from './hooks/useElementWidth'
 export { useMeasuredText } from './hooks/useMeasuredText'
 export { usePreparedText } from './hooks/usePreparedText'

@@ -1,13 +1,14 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties } from 'react'
 import { useMemo } from 'react'
 import { useElementWidth } from '../hooks/useElementWidth'
 import { usePreparedSegments } from '../hooks/usePreparedSegments'
 import type { PrepareOptions } from '../hooks/usePreparedText'
+import type { EditorialFigure } from '../lib/editorialFigures'
 import type { EditorialPositionedLine } from '../lib/editorialLineAnnotation'
 import { layoutEditorialTrack } from '../lib/layoutEditorialTrack'
 import { renderResolvedEditorialFigure } from './renderResolvedEditorialFigure'
 
-type PEditorialSurfaceProps = {
+type EditorialSurfaceProps = {
   text: string
   font: string
   lineHeight: number
@@ -18,10 +19,10 @@ type PEditorialSurfaceProps = {
   prepareOptions?: PrepareOptions
   className?: string
   style?: CSSProperties
-  children?: ReactNode
+  figures?: EditorialFigure[]
 }
 
-function PEditorialSurface({
+function EditorialSurface({
   text,
   font,
   lineHeight,
@@ -32,8 +33,8 @@ function PEditorialSurface({
   prepareOptions,
   className,
   style,
-  children,
-}: PEditorialSurfaceProps) {
+  figures,
+}: EditorialSurfaceProps) {
   const { ref, width } = useElementWidth<HTMLDivElement>()
   const { prepared } = usePreparedSegments({ text, font, options: prepareOptions })
 
@@ -53,7 +54,7 @@ function PEditorialSurface({
 
     return layoutEditorialTrack({
       prepared,
-      children,
+      figures,
       width,
       height: baseHeight,
       lineHeight,
@@ -61,7 +62,7 @@ function PEditorialSurface({
       maxY,
       preserveParagraphBreaks,
     })
-  }, [baseHeight, children, lineHeight, maxY, preserveParagraphBreaks, prepared, startY, width])
+  }, [baseHeight, figures, lineHeight, maxY, preserveParagraphBreaks, prepared, startY, width])
 
   const height = Math.max(baseHeight, startY + layout.body.height)
 
@@ -98,5 +99,5 @@ function PEditorialSurface({
   )
 }
 
-export { PEditorialSurface }
-export type { PEditorialSurfaceProps }
+export { EditorialSurface }
+export type { EditorialSurfaceProps }

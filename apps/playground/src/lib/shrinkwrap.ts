@@ -1,4 +1,4 @@
-import { layoutWithLines, prepareWithSegments } from '@santjc/react-pretext'
+import { layoutWithLines, prepareWithSegments } from '@santjc/react-pretext/pretext'
 
 type BubbleMetrics = {
   lineCount: number

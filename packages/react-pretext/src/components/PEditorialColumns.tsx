@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties } from 'react'
 import { useMemo } from 'react'
 import { useElementWidth } from '../hooks/useElementWidth'
 import { usePreparedSegments } from '../hooks/usePreparedSegments'
@@ -8,14 +8,14 @@ import type { ResolvedEditorialFigure } from '../lib/editorialFigures'
 import { initialCursor, type TextFlowResult } from '../lib/flowText'
 import { layoutEditorialTrack } from '../lib/layoutEditorialTrack'
 import {
-  getEditorialTracksFromChildren,
   getEditorialTracksWidth,
   resolveEditorialTracks,
+  type EditorialTrack,
   type ResolvedEditorialTrack,
 } from '../lib/editorialTracks'
 import { renderResolvedEditorialFigure } from './renderResolvedEditorialFigure'
 
-type PEditorialColumnsProps = {
+type EditorialColumnsProps = {
   text: string
   font: string
   lineHeight: number
@@ -24,7 +24,7 @@ type PEditorialColumnsProps = {
   prepareOptions?: PrepareOptions
   className?: string
   style?: CSSProperties
-  children: ReactNode
+  tracks: EditorialTrack[]
 }
 
 type RenderedTrack = ResolvedEditorialTrack & {
@@ -44,7 +44,7 @@ function createEmptyEditorialBody(): RenderedTrack['body'] {
   }
 }
 
-function PEditorialColumns({
+function EditorialColumns({
   text,
   font,
   lineHeight,
@@ -53,11 +53,10 @@ function PEditorialColumns({
   prepareOptions,
   className,
   style,
-  children,
-}: PEditorialColumnsProps) {
+  tracks: trackDefs,
+}: EditorialColumnsProps) {
   const { ref, width: availableWidth } = useElementWidth<HTMLDivElement>()
-  const trackElements = useMemo(() => getEditorialTracksFromChildren(children), [children])
-  const tracks = useMemo(() => resolveEditorialTracks(trackElements, gap, availableWidth), [availableWidth, gap, trackElements])
+  const tracks = useMemo(() => resolveEditorialTracks(trackDefs, gap, availableWidth), [availableWidth, gap, trackDefs])
   const { prepared } = usePreparedSegments({ text, font, options: prepareOptions })
 
   const renderedTracks = useMemo<RenderedTrack[]>(() => {
@@ -77,7 +76,7 @@ function PEditorialColumns({
       const paddingBlock = track.paddingBlock ?? 0
       const { figures, body } = layoutEditorialTrack({
         prepared,
-        children: track.children,
+        figures: track.figures,
         width: track.width,
         height: track.minHeight ?? 320,
         lineHeight,
@@ -159,5 +158,5 @@ function PEditorialColumns({
   )
 }
 
-export { PEditorialColumns }
-export type { PEditorialColumnsProps }
+export { EditorialColumns }
+export type { EditorialColumnsProps }

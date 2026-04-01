@@ -1,5 +1,4 @@
-import type { CSSProperties, ReactElement, ReactNode } from 'react'
-import { Children, isValidElement } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { getCircleBlockedLineRangeForRow, type BlockedLineRange } from './lineSlots'
 
 type EditorialPlacement =
@@ -13,8 +12,7 @@ type EditorialPlacement =
   | 'bottom-center'
   | 'bottom-right'
 
-type PEditorialFigureProps = {
-  children: ReactNode
+type EditorialFigure = {
   shape: 'circle' | 'rect'
   width: number
   height: number
@@ -24,9 +22,10 @@ type PEditorialFigureProps = {
   linePadding?: number
   className?: string
   style?: CSSProperties
+  content?: ReactNode
 }
 
-type ResolvedEditorialFigure = PEditorialFigureProps & {
+type ResolvedEditorialFigure = EditorialFigure & {
   x: number
   y: number
 }
@@ -36,15 +35,8 @@ type EditorialBounds = {
   height: number
 }
 
-function PEditorialFigure(props: PEditorialFigureProps) {
-  void props
-  return null
-}
-
-PEditorialFigure.displayName = 'PEditorialFigure'
-
 function resolveEditorialPlacement(
-  figure: Omit<PEditorialFigureProps, 'children'>,
+  figure: EditorialFigure,
   bounds: EditorialBounds,
 ): { x: number; y: number } {
   const placement = figure.placement ?? 'top-right'
@@ -165,32 +157,9 @@ function getBlockedLineRangesForEditorialFigures(
   return blocked
 }
 
-function isPEditorialFigureElement(child: ReactNode): child is ReactElement<PEditorialFigureProps> {
-  return isValidElement(child) && child.type === PEditorialFigure
-}
-
-function getEditorialFiguresFromChildren(children: ReactNode): ReactElement<PEditorialFigureProps>[] {
-  const figures: ReactElement<PEditorialFigureProps>[] = []
-
-  Children.forEach(children, (child) => {
-    if (isPEditorialFigureElement(child)) {
-      figures.push(child)
-      return
-    }
-
-    if (child !== null && child !== undefined && child !== false && process.env.NODE_ENV !== 'production') {
-      console.warn('Editorial tracks only support direct PEditorialFigure children. Ignored child:', child)
-    }
-  })
-
-  return figures
-}
-
 export {
-  PEditorialFigure,
-  getEditorialFiguresFromChildren,
   getBlockedLineRangesForEditorialFigures,
   getRectBlockedLineRangeForRow,
   resolveEditorialPlacement,
 }
-export type { EditorialPlacement, PEditorialFigureProps, ResolvedEditorialFigure, EditorialBounds }
+export type { EditorialPlacement, EditorialFigure, ResolvedEditorialFigure, EditorialBounds }

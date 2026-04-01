@@ -14,7 +14,7 @@ function renderResolvedEditorialFigure(figure: ResolvedEditorialFigure, index: n
         ...figure.style,
       }}
     >
-      {figure.children}
+      {figure.content}
     </div>
   )
 }

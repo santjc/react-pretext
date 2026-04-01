@@ -38,7 +38,7 @@ describe('editorial justification integration', () => {
       paddingInline: 10,
       startY: 0,
       preserveParagraphBreaks: true,
-      children: null,
+      figures: [],
     })
 
     const justifyCount = result.body.lines.filter((line) => line.justifyWordSpacing !== null).length

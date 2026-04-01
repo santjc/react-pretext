@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { PText } from "@santjc/react-pretext";
 import {
-  PEditorialColumns,
-  PEditorialFigure,
-  PEditorialSurface,
-  PEditorialTrack,
+  EditorialColumns,
+  EditorialSurface,
 } from "@santjc/react-pretext/editorial";
 import { ShowcaseIntro } from "../components/ShowcaseIntro";
 import { fontWeightOptions } from "../lib/typography";
@@ -163,7 +161,7 @@ function EditorialPage() {
               Latest dispatches from the continental flying fields
             </PText>
 
-            <PEditorialSurface
+            <EditorialSurface
               text={leftRailText}
               font={font}
               lineHeight={lineHeight}
@@ -171,11 +169,8 @@ function EditorialPage() {
               lineRenderMode={lineRenderMode}
               prepareOptions={prepareOptions}
               className="newsprint-body"
-            >
-              <PEditorialFigure shape="rect" width={120} height={156} placement="top-center" linePadding={10}>
-                <Placeholder />
-              </PEditorialFigure>
-            </PEditorialSurface>
+              figures={[{ shape: 'rect', width: 120, height: 156, placement: 'top-center', linePadding: 10, content: <Placeholder /> }]}
+            />
           </aside>
 
           <article className="newsprint-feature">
@@ -191,7 +186,7 @@ function EditorialPage() {
               Consectetur Adipisicing
             </PText>
 
-            <PEditorialColumns
+            <EditorialColumns
               text={featureText}
               font={font}
               lineHeight={lineHeight}
@@ -199,18 +194,23 @@ function EditorialPage() {
               lineRenderMode={lineRenderMode}
               prepareOptions={prepareOptions}
               className="newsprint-columns"
-            >
-              <PEditorialTrack fr={1} minHeight={mainTrackHeight} paddingInline={10} className="newsprint-track">
-                <PEditorialFigure shape="rect" width={178} height={110} placement="top-right" linePadding={10}>
-                  <Placeholder />
-                </PEditorialFigure>
-              </PEditorialTrack>
-              <PEditorialTrack fr={1} minHeight={mainTrackHeight} paddingInline={10} className="newsprint-track">
-                <PEditorialFigure shape="circle" width={86} height={86} placement="bottom-center" linePadding={10}>
-                  <Placeholder className="np-placeholder-circle" />
-                </PEditorialFigure>
-              </PEditorialTrack>
-            </PEditorialColumns>
+              tracks={[
+                {
+                  fr: 1,
+                  minHeight: mainTrackHeight,
+                  paddingInline: 10,
+                  className: 'newsprint-track',
+                  figures: [{ shape: 'rect', width: 178, height: 110, placement: 'top-right', linePadding: 10, content: <Placeholder /> }],
+                },
+                {
+                  fr: 1,
+                  minHeight: mainTrackHeight,
+                  paddingInline: 10,
+                  className: 'newsprint-track',
+                  figures: [{ shape: 'circle', width: 86, height: 86, placement: 'bottom-center', linePadding: 10, content: <Placeholder className="np-placeholder-circle" /> }],
+                },
+              ]}
+            />
           </article>
 
           <aside className="newsprint-rail">
@@ -226,7 +226,7 @@ function EditorialPage() {
 
             <Placeholder className="np-placeholder-sm" />
 
-            <PEditorialSurface
+            <EditorialSurface
               text={rightRailText}
               font={font}
               lineHeight={lineHeight}
@@ -234,11 +234,8 @@ function EditorialPage() {
               lineRenderMode={lineRenderMode}
               prepareOptions={prepareOptions}
               className="newsprint-body"
-            >
-              <PEditorialFigure shape="rect" width={140} height={86} placement="center" linePadding={10}>
-                <Placeholder />
-              </PEditorialFigure>
-            </PEditorialSurface>
+              figures={[{ shape: 'rect', width: 140, height: 86, placement: 'center', linePadding: 10, content: <Placeholder /> }]}
+            />
           </aside>
         </section>
 
@@ -255,7 +252,7 @@ function EditorialPage() {
             >
               Tempor Incididunt
             </PText>
-            <PEditorialSurface text={bottomLeftText} font={font} lineHeight={lineHeight} minHeight={bottomSurfaceHeight} lineRenderMode={lineRenderMode} prepareOptions={prepareOptions} />
+            <EditorialSurface text={bottomLeftText} font={font} lineHeight={lineHeight} minHeight={bottomSurfaceHeight} lineRenderMode={lineRenderMode} prepareOptions={prepareOptions} />
           </article>
 
           <article className="newsprint-module">
@@ -269,7 +266,7 @@ function EditorialPage() {
             >
               Laboris Nisi
             </PText>
-            <PEditorialSurface text={bottomCenterText} font={font} lineHeight={lineHeight} minHeight={bottomSurfaceHeight} lineRenderMode={lineRenderMode} prepareOptions={prepareOptions} />
+            <EditorialSurface text={bottomCenterText} font={font} lineHeight={lineHeight} minHeight={bottomSurfaceHeight} lineRenderMode={lineRenderMode} prepareOptions={prepareOptions} />
           </article>
 
           <article className="newsprint-module newsprint-module-wide">
@@ -283,7 +280,7 @@ function EditorialPage() {
             >
               Aute Irure
             </PText>
-            <PEditorialColumns
+            <EditorialColumns
               text={bottomWideText}
               font={font}
               lineHeight={lineHeight}
@@ -291,14 +288,17 @@ function EditorialPage() {
               lineRenderMode={lineRenderMode}
               prepareOptions={prepareOptions}
               className="newsprint-columns"
-            >
-               <PEditorialTrack fr={1} minHeight={bottomSurfaceHeight + 14} paddingInline={8} className="newsprint-track" />
-               <PEditorialTrack fr={1} minHeight={bottomSurfaceHeight + 14} paddingInline={8} className="newsprint-track">
-                 <PEditorialFigure shape="rect" width={92} height={72} placement="top-center" linePadding={8}>
-                   <Placeholder />
-                 </PEditorialFigure>
-              </PEditorialTrack>
-            </PEditorialColumns>
+              tracks={[
+                { fr: 1, minHeight: bottomSurfaceHeight + 14, paddingInline: 8, className: 'newsprint-track' },
+                {
+                  fr: 1,
+                  minHeight: bottomSurfaceHeight + 14,
+                  paddingInline: 8,
+                  className: 'newsprint-track',
+                  figures: [{ shape: 'rect', width: 92, height: 72, placement: 'top-center', linePadding: 8, content: <Placeholder /> }],
+                },
+              ]}
+            />
           </article>
         </section>
       </section>

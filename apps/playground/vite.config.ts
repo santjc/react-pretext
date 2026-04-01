@@ -11,6 +11,10 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../packages/react-pretext/src/editorial.ts', import.meta.url)),
       },
       {
+        find: '@santjc/react-pretext/pretext',
+        replacement: fileURLToPath(new URL('../../packages/react-pretext/src/pretext.ts', import.meta.url)),
+      },
+      {
         find: '@santjc/react-pretext',
         replacement: fileURLToPath(new URL('../../packages/react-pretext/src/index.ts', import.meta.url)),
       },

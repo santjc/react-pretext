@@ -1,6 +1,6 @@
 # @santjc/react-pretext
 
-Thin React primitives and re-exports for [`@chenglou/pretext`](https://www.npmjs.com/package/@chenglou/pretext).
+Thin React primitives over [`@chenglou/pretext`](https://www.npmjs.com/package/@chenglou/pretext).
 
 This package keeps the original `pretext` model intact and adds a small React layer where React actually helps.
 
@@ -20,10 +20,7 @@ npm install @santjc/react-pretext react react-dom
 
 ## Stable API
 
-The root package exports two things:
-
-1. Re-exports from `@chenglou/pretext`
-2. Thin React helpers
+The root package is the intentional React-facing surface.
 
 Stable React exports:
 
@@ -133,6 +130,23 @@ function Example({ text, width }: { text: string; width: number }) {
 
 Drop down to `usePreparedText()` and `usePretextLayout()` when you want to control the prepare and layout phases separately. Use `usePreparedSegments()` with `usePretextLines()` when you need actual line output.
 
+## Low-Level Pretext API
+
+Raw `@chenglou/pretext` exports live on a dedicated `pretext` subpath:
+
+```ts
+import {
+  prepare,
+  prepareWithSegments,
+  layout,
+  layoutWithLines,
+  layoutNextLine,
+  walkLineRanges,
+} from '@santjc/react-pretext/pretext'
+```
+
+Use this subpath when you want the original low-level pretext model without the React-first root entrypoint.
+
 ## Editorial API
 
 Editorial helpers live on the advanced `editorial` subpath:
@@ -145,10 +159,10 @@ import {
   createLineSlotResolver,
   getCircleBlockedLineRangeForRow,
   pickWidestLineSlot,
-  PEditorialColumns,
-  PEditorialSurface,
-  PEditorialTrack,
-  PEditorialFigure,
+  EditorialColumns,
+  EditorialSurface,
+  type EditorialTrack,
+  type EditorialFigure,
 } from '@santjc/react-pretext/editorial'
 ```
 
@@ -165,6 +179,38 @@ Reach for them when you need custom line rendering, obstacle-aware flow, or mult
 - `prepareOptions` currently map directly to pretext preparation options, such as `whiteSpace`.
 - `useTextFlow` expects a reference-stable `getLineSlotAtY` callback. Memoize custom resolvers in React.
 - Editorial `lineRenderMode="justify"` uses pretext-derived `word-spacing` and will skip justification for unsupported whitespace patterns instead of delegating wrapping back to the browser.
-- `PEditorialFigure` treats explicit `x` and `y` as overrides over `placement`, and clamps the result within available bounds.
+- `EditorialFigure` treats explicit `x` and `y` as overrides over `placement`, and clamps the result within available bounds.
 
-The package exposes a small root API plus an advanced editorial subpath.
+### Editorial migration
+
+The editorial layer is now config-driven instead of sentinel-child driven.
+
+Before:
+
+```tsx
+<PEditorialColumns text={text} font={font} lineHeight={28}>
+  <PEditorialTrack fr={1}>
+    <PEditorialFigure shape="circle" width={96} height={96}>
+      <Orb />
+    </PEditorialFigure>
+  </PEditorialTrack>
+</PEditorialColumns>
+```
+
+After:
+
+```tsx
+<EditorialColumns
+  text={text}
+  font={font}
+  lineHeight={28}
+  tracks={[
+    {
+      fr: 1,
+      figures: [{ shape: 'circle', width: 96, height: 96, content: <Orb /> }],
+    },
+  ]}
+/>
+```
+
+The package exposes a small React-first root API, a low-level `pretext` subpath, and an advanced `editorial` subpath.

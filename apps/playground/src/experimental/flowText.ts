@@ -1,4 +1,4 @@
-import { layoutNextLine, type LayoutCursor, type PreparedTextWithSegments } from '@santjc/react-pretext'
+import { layoutNextLine, type LayoutCursor, type PreparedTextWithSegments } from '@santjc/react-pretext/pretext'
 
 type FlowRegion = {
   x: number

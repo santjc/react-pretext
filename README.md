@@ -1,6 +1,6 @@
 # @santjc/react-pretext
 
-Thin React primitives and re-exports for [`@chenglou/pretext`](https://www.npmjs.com/package/@chenglou/pretext).
+Thin React primitives over [`@chenglou/pretext`](https://www.npmjs.com/package/@chenglou/pretext).
 
 `@santjc/react-pretext` is meant to make normal React adoption clearer, not to hide `pretext` behind a large framework.
 
@@ -30,16 +30,10 @@ npm install @santjc/react-pretext react react-dom
 
 ## Stable API
 
-Import stable APIs from the package root:
+Import the React-facing stable APIs from the package root:
 
 ```ts
 import {
-  prepare,
-  prepareWithSegments,
-  layout,
-  layoutWithLines,
-  layoutNextLine,
-  walkLineRanges,
   createPretextTypography,
   useElementWidth,
   useMeasuredText,
@@ -194,6 +188,19 @@ If you want to prepare once and reuse that prepared handle across multiple layou
 
 If you want actual line output from segmented text, use `usePreparedSegments()` with `usePretextLines()`.
 
+If you want the raw `@chenglou/pretext` APIs directly, import them from the dedicated `pretext` subpath instead of the root entrypoint.
+
+```ts
+import {
+  prepare,
+  prepareWithSegments,
+  layout,
+  layoutWithLines,
+  layoutNextLine,
+  walkLineRanges,
+} from '@santjc/react-pretext/pretext'
+```
+
 ```tsx
 import { usePreparedSegments, usePretextLines } from '@santjc/react-pretext'
 
@@ -231,10 +238,10 @@ import {
   createLineSlotResolver,
   getCircleBlockedLineRangeForRow,
   pickWidestLineSlot,
-  PEditorialColumns,
-  PEditorialSurface,
-  PEditorialTrack,
-  PEditorialFigure,
+  EditorialColumns,
+  EditorialSurface,
+  type EditorialTrack,
+  type EditorialFigure,
 } from '@santjc/react-pretext/editorial'
 ```
 
@@ -369,6 +376,8 @@ The package works best if you treat it in layers.
 If you are building normal UI text measurement, stay on the stable root API.
 If you are building custom layout systems, the editorial APIs on the `editorial` subpath are the right place to explore.
 
+If you want the original non-React low-level helpers, use the `pretext` subpath.
+
 ## Caveats
 
 - `createPretextTypography()` is the recommended way to keep measurement inputs and render styles aligned.
@@ -379,7 +388,14 @@ If you are building custom layout systems, the editorial APIs on the `editorial`
 - `useTextFlow` expects a reference-stable `getLineSlotAtY` callback. Memoize it with `useMemo` when passing custom resolvers from React components.
 - `usePreparedText` only includes `prepareMs` when `enableProfiling: true` is passed.
 - Editorial `lineRenderMode="justify"` uses explicit `word-spacing` derived from pretext line measurements instead of browser `text-align: justify`. Complex whitespace cases fall back to left alignment.
-- `PEditorialFigure` treats explicit `x` and `y` as overrides over `placement`, and clamps the final position within the available bounds.
+- `EditorialFigure` treats explicit `x` and `y` as overrides over `placement`, and clamps the final position within the available bounds.
+
+## Breaking Changes
+
+- Root imports no longer re-export raw `@chenglou/pretext` APIs.
+- Migrate `import { prepare } from '@santjc/react-pretext'` to `import { prepare } from '@santjc/react-pretext/pretext'`.
+- `PEditorialColumns` and `PEditorialSurface` were renamed to `EditorialColumns` and `EditorialSurface`.
+- `PEditorialTrack` and `PEditorialFigure` sentinel children were replaced by `EditorialTrack` and `EditorialFigure` config objects passed through `tracks` and `figures` props.
 
 ## Contributing
 

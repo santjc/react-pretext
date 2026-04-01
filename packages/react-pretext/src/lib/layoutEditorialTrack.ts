@@ -1,11 +1,9 @@
 import type { LayoutCursor, PreparedTextWithSegments } from '@chenglou/pretext'
-import type { ReactNode } from 'react'
 import { annotateEditorialLines, type EditorialPositionedLine } from './editorialLineAnnotation'
 import {
   getBlockedLineRangesForEditorialFigures,
-  getEditorialFiguresFromChildren,
   resolveEditorialPlacement,
-  type PEditorialFigureProps,
+  type EditorialFigure,
   type ResolvedEditorialFigure,
 } from './editorialFigures'
 import { flowText, initialCursor, type TextFlowResult } from './flowText'
@@ -13,7 +11,7 @@ import { createLineSlotResolver } from './lineSlots'
 
 type LayoutEditorialTrackInput = {
   prepared: PreparedTextWithSegments
-  children?: ReactNode
+  figures?: EditorialFigure[]
   width: number
   height: number
   lineHeight: number
@@ -34,7 +32,7 @@ type LayoutEditorialTrackResult = {
 
 function layoutEditorialTrack({
   prepared,
-  children,
+  figures: figureDefs = [],
   width,
   height,
   lineHeight,
@@ -47,16 +45,14 @@ function layoutEditorialTrack({
 }: LayoutEditorialTrackInput): LayoutEditorialTrackResult {
   const innerWidth = Math.max(24, width - paddingInline * 2)
   const innerHeight = Math.max(0, height - paddingBlock * 2)
-  const figureElements = getEditorialFiguresFromChildren(children)
-  const figures = figureElements.map((figureElement) => {
-    const props: PEditorialFigureProps = figureElement.props
-    const resolved = resolveEditorialPlacement(props, {
+  const figures = figureDefs.map((figure) => {
+    const resolved = resolveEditorialPlacement(figure, {
       width: innerWidth,
       height: innerHeight,
     })
 
     return {
-      ...props,
+      ...figure,
       x: paddingInline + resolved.x,
       y: paddingBlock + resolved.y,
     }

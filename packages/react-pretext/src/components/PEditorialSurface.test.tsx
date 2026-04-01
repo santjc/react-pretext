@@ -1,7 +1,6 @@
 import { render } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { PEditorialFigure } from '../lib/editorialFigures'
-import { PEditorialSurface } from './PEditorialSurface'
+import { EditorialSurface } from './PEditorialSurface'
 
 const useElementWidthMock = vi.fn()
 const usePreparedSegmentsMock = vi.fn()
@@ -19,7 +18,7 @@ vi.mock('../lib/layoutEditorialTrack', () => ({
   layoutEditorialTrack: (...args: unknown[]) => layoutEditorialTrackMock(...args),
 }))
 
-describe('PEditorialSurface', () => {
+describe('EditorialSurface', () => {
   beforeEach(() => {
     useElementWidthMock.mockReset()
     usePreparedSegmentsMock.mockReset()
@@ -28,7 +27,7 @@ describe('PEditorialSurface', () => {
     useElementWidthMock.mockReturnValue({ ref: vi.fn(), width: 480, node: null })
     usePreparedSegmentsMock.mockReturnValue({ prepared: { segments: ['hello'], kinds: ['text'] }, isReady: true })
     layoutEditorialTrackMock.mockReturnValue({
-      figures: [{ shape: 'circle', width: 120, height: 120, x: 320, y: 0, children: <div>orb</div> }],
+      figures: [{ shape: 'circle', width: 120, height: 120, x: 320, y: 0, content: <div>orb</div> }],
       body: {
         lines: [
           { text: 'hello', x: 0, y: 100, width: 120, slotLeft: 0, slotRight: 120, slotWidth: 120, start: { segmentIndex: 0, graphemeIndex: 0 }, end: { segmentIndex: 0, graphemeIndex: 5 }, justifyWordSpacing: null, isTerminal: true, isParagraphTerminal: false },
@@ -40,11 +39,13 @@ describe('PEditorialSurface', () => {
 
   it('renders flowed lines and figure children', () => {
     const { container, getByText } = render(
-      <PEditorialSurface text="body" font="400 18px GeistVariable, sans-serif" lineHeight={28} startY={100}>
-        <PEditorialFigure shape="circle" width={120} height={120} placement="top-right">
-          <div>orb</div>
-        </PEditorialFigure>
-      </PEditorialSurface>,
+      <EditorialSurface
+        text="body"
+        font="400 18px GeistVariable, sans-serif"
+        lineHeight={28}
+        startY={100}
+        figures={[{ shape: 'circle', width: 120, height: 120, placement: 'top-right', content: <div>orb</div> }]}
+      />,
     )
 
     expect(getByText('orb')).toBeTruthy()
@@ -54,11 +55,12 @@ describe('PEditorialSurface', () => {
 
   it('passes prepared text to useTextFlow', () => {
     render(
-      <PEditorialSurface text="body" font="400 18px GeistVariable, sans-serif" lineHeight={28}>
-        <PEditorialFigure shape="rect" width={120} height={80} x={40} y={60}>
-          <div>figure</div>
-        </PEditorialFigure>
-      </PEditorialSurface>,
+      <EditorialSurface
+        text="body"
+        font="400 18px GeistVariable, sans-serif"
+        lineHeight={28}
+        figures={[{ shape: 'rect', width: 120, height: 80, x: 40, y: 60, content: <div>figure</div> }]}
+      />,
     )
 
     expect(layoutEditorialTrackMock).toHaveBeenCalled()
@@ -82,7 +84,7 @@ describe('PEditorialSurface', () => {
     })
 
     const { getByText } = render(
-      <PEditorialSurface
+      <EditorialSurface
         text="body"
         font="400 18px GeistVariable, sans-serif"
         lineHeight={28}

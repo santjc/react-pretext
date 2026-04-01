@@ -1,17 +1,11 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
-  PEditorialFigure,
   getBlockedLineRangesForEditorialFigures,
-  getEditorialFiguresFromChildren,
   getRectBlockedLineRangeForRow,
   resolveEditorialPlacement,
 } from './editorialFigures'
 
 describe('editorialFigures', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   it('resolves preset placement within bounds', () => {
     expect(
       resolveEditorialPlacement(
@@ -59,31 +53,11 @@ describe('editorialFigures', () => {
     ).toEqual({ left: 100, right: 180 })
   })
 
-  it('collects only PEditorialFigure children', () => {
-    const figures = getEditorialFiguresFromChildren([
-      <PEditorialFigure key="a" shape="circle" width={100} height={100}>a</PEditorialFigure>,
-      <div key="b">ignore</div>,
-    ])
-
-    expect(figures).toHaveLength(1)
-  })
-
-  it('warns when non-figure children are ignored', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
-
-    getEditorialFiguresFromChildren([
-      <PEditorialFigure key="a" shape="circle" width={100} height={100}>a</PEditorialFigure>,
-      <div key="b">ignore</div>,
-    ])
-
-    expect(warn).toHaveBeenCalledTimes(1)
-  })
-
   it('aggregates blocked ranges for resolved figures', () => {
     const ranges = getBlockedLineRangesForEditorialFigures(
       [
-        { shape: 'rect', width: 80, height: 50, x: 100, y: 120, children: null },
-        { shape: 'circle', width: 80, height: 80, x: 220, y: 100, linePadding: 8, children: null },
+        { shape: 'rect', width: 80, height: 50, x: 100, y: 120 },
+        { shape: 'circle', width: 80, height: 80, x: 220, y: 100, linePadding: 8 },
       ],
       130,
       150,

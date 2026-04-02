@@ -183,3 +183,20 @@ Measurement depends on canvas-backed text metrics, so measurement hooks are a cl
 - `packages/react-pretext/src/test/*`: package boundary and integration tests
 
 The package README in `packages/react-pretext/README.md` contains the fuller API and guidance reference.
+
+## Versioning and release
+
+`@santjc/react-pretext` should stay on `0.x` until the API is stable enough to promise `1.0.0` compatibility.
+
+- use `npm run version:react-pretext:patch` for fixes that do not change the intended API
+- use `npm run version:react-pretext:minor` for new features and for any breaking change while still in `0.x`
+- use `npm run version:react-pretext:prerelease` for `beta` publishes like `0.2.0-beta.0`
+
+Recommended release flow:
+
+1. Run the version bump script.
+2. Update `CHANGELOG.md`.
+3. Commit the versioned changes.
+4. Trigger the `Publish @santjc/react-pretext` GitHub Action with the exact committed version.
+
+The publish workflow validates the version, runs lint/test/build, checks that the version is not already on npm, and publishes only `@santjc/react-pretext` to the public npm registry.

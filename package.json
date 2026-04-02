@@ -10,7 +10,10 @@
     "dev": "npm run dev -w @santjc/playground",
     "build": "npm run build -w @santjc/react-pretext && npm run build -w @santjc/playground",
     "lint": "npm run lint -w @santjc/react-pretext && npm run lint -w @santjc/playground",
-    "test": "npm run test -w @santjc/react-pretext && npm run test -w @santjc/playground"
+    "test": "npm run test -w @santjc/react-pretext && npm run test -w @santjc/playground",
+    "version:react-pretext:patch": "npm version patch --no-git-tag-version -w @santjc/react-pretext",
+    "version:react-pretext:minor": "npm version minor --no-git-tag-version -w @santjc/react-pretext",
+    "version:react-pretext:prerelease": "npm version prerelease --preid beta --no-git-tag-version -w @santjc/react-pretext"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

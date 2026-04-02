@@ -1,0 +1,68 @@
+name: Publish @santjc/react-pretext
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_version:
+        description: Version already committed in packages/react-pretext/package.json
+        required: true
+        type: string
+
+concurrency:
+  group: publish-react-pretext
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm-public
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify package version
+        run: |
+          VERSION=$(npm pkg get version -w @santjc/react-pretext | tr -d '"')
+          if [ "$VERSION" != "${{ inputs.expected_version }}" ]; then
+            echo "Expected version ${{ inputs.expected_version }}, found $VERSION"
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Check version is unpublished
+        run: |
+          if npm view "@santjc/react-pretext@$VERSION" version --registry=https://registry.npmjs.org/ >/dev/null 2>&1; then
+            echo "@santjc/react-pretext@$VERSION already exists on npm"
+            exit 1
+          fi
+
+      - name: Lint package
+        run: npm run lint -w @santjc/react-pretext
+
+      - name: Test package
+        run: npm run test -w @santjc/react-pretext
+
+      - name: Build package
+        run: npm run build -w @santjc/react-pretext
+
+      - name: Verify publish contents
+        run: npm pack --dry-run -w @santjc/react-pretext
+
+      - name: Publish package
+        run: npm publish -w @santjc/react-pretext --access public --registry=https://registry.npmjs.org/
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

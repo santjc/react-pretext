@@ -1,6 +1,6 @@
 {
   "name": "@santjc/react-pretext",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Simple React wrapper over @chenglou/pretext for deterministic text measurement before paint, with an advanced editorial subpath.",
   "license": "MIT",
   "type": "module",
